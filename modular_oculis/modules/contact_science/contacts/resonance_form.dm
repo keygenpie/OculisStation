@@ -5,3 +5,5 @@
 
 	var/list/dialogue_lines
 	var/list/echoes
+	var/minimum_dialogue_timer = 20
+	var/maximum_dialogue_timer = 40
