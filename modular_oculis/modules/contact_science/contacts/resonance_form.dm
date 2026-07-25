@@ -6,6 +6,7 @@
 	var/nanotrasen_id = "Identification: H1-001"
 	var/hazard_class = "Hazard Class: One"
 	var/initial_line = "Hello!"
+	var/hidden_description = "ooOOoo"
 	var/list/dialogue_lines
 	var/list/echoes
 	var/minimum_dialogue_timer = 20
