@@ -4,7 +4,7 @@
 	wander = 0
 
 	var/nanotrasen_id = "Identification: H1-001"
-	var/hazard_class = "Hazard Class: One"
+	var/hazard_labels = "Cognitohazard"
 	var/initial_line = "Hello!"
 	var/hidden_description = "ooOOoo"
 	var/list/dialogue_lines
