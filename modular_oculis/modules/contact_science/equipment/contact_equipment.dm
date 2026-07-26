@@ -232,7 +232,7 @@
 
 /obj/item/contactanalyzer
 	name = "formic analyzer"
-	desc = "A hand-held resonance scanner which compares the properties of the scanned resonance form with a Nanotrasen database."
+	desc = "A hand-held resonance scanner which establishes a speech link with anomalous resonance forms and compares their properties with a Nanotrasen database."
 	icon = 'modular_oculis/modules/contact_science/icons/contact_equipment.dmi'
 	icon_state = "contactremote"
 	w_class = WEIGHT_CLASS_SMALL
@@ -254,7 +254,12 @@
 		var/mob/living/simple_animal/formic/analyzed_mob = interacting_with
 		analyze_form(analyzed_mob, user)
 		return ITEM_INTERACT_SUCCESS
-	return interact_with_atom(interacting_with, user, modifiers)
+
+/obj/item/contactanalyzer/interact_with_atom(atom/interacting_with, mob/living/user, list/modifiers)
+	if(istype(interacting_with, /mob/living/simple_animal/formic) && can_see(user, interacting_with, scan_distance))
+		var/mob/living/simple_animal/formic/analyzed_mob = interacting_with
+		analyze_form(analyzed_mob, user)
+		return ITEM_INTERACT_SUCCESS
 
 /obj/item/contactanalyzer/proc/analyze_form(mob/living/simple_animal/formic/analyzed_form, mob/living/user)
 	playsound(user, SFX_INDUSTRIAL_SCAN, 20, TRUE, -2, TRUE, FALSE)
@@ -266,3 +271,4 @@
 	message += span_notice("Database Description: " + analyzed_form.hidden_description)
 
 	to_chat(user, boxed_message(jointext(message, "\n")), type = MESSAGE_TYPE_INFO)
+	analyzed_form.establish_link(user)
