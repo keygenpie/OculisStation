@@ -19,14 +19,16 @@
 	var/interaction_cooldown_current = 0
 	var/interaction_cooldown = 2
 
-/mob/living/simple_animal/formic/Initialize()
+/mob/living/simple_animal/formic/Initialize(mapload)
+	. = ..()
 	say(initial_line)
 
-/mob/living/simple_animal/formic/process(seconds_per_tick)
+/mob/living/simple_animal/formic/Life(seconds_per_tick = SSMOBS_DT)
+	. = ..()
 	if(interaction_cooldown_current > 0)
 		interaction_cooldown_current -= seconds_per_tick
 	if(dialogue_timer_current < dialogue_timer)
-		dialogue_timer_current += dialogue_timer
+		dialogue_timer_current += seconds_per_tick
 		if(dialogue_timer_current >= dialogue_timer)
 			perform_dialogue()
 
