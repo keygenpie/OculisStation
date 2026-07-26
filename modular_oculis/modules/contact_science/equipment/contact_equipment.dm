@@ -269,6 +269,9 @@
 	message += span_notice(analyzed_form.nanotrasen_id + ": " + analyzed_form.name)
 	message += span_notice("Hazard Label(s): " + analyzed_form.hazard_labels)
 	message += span_notice("Database Description: " + analyzed_form.hidden_description)
+	message += span_notice("<b>Detected Echoes:</b>")
+	for(var/echo in analyzed_form.echoes)
+		message += span_notice("'" + echo + "'")
 
 	to_chat(user, boxed_message(jointext(message, "\n")), type = MESSAGE_TYPE_INFO)
 	analyzed_form.establish_link(user)
