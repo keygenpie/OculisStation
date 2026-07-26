@@ -18,6 +18,7 @@
 	var/dialogue_timer = 30
 	var/interaction_cooldown_current = 0
 	var/interaction_cooldown = 2
+	var/list/active_links
 
 /mob/living/simple_animal/formic/Initialize(mapload)
 	. = ..()
@@ -55,5 +56,14 @@
 		return
 
 /mob/living/simple_animal/formic/proc/establish_link(mob/living/target)
-	RegisterSignal(target, COMSIG_MOB_SAY, PROC_REF(respond_to_command))
-	balloon_alert(target, "speech linked!")
+	if(!active_links) //if list is not made yet, make it. errors otherwise because list doesnt exist yet
+		RegisterSignal(target, COMSIG_MOB_SAY, PROC_REF(respond_to_command))
+		active_links = list(target)
+		balloon_alert(target, "speech linked!")
+		return
+	if(!active_links.Find(target)) //if target is not already linked to this resonant form
+		RegisterSignal(target, COMSIG_MOB_SAY, PROC_REF(respond_to_command))
+		active_links += target
+		balloon_alert(target, "speech linked!")
+	else
+		balloon_alert(target, "speech already linked!")
