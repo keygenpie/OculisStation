@@ -22,6 +22,7 @@
 	var/dialogue_delay = 4
 	var/list/active_links
 	var/last_response = "None"
+	var/last_speaker
 	var/awaiting_response
 
 /mob/living/simple_animal/formic/Initialize(mapload)
@@ -53,6 +54,7 @@
 			if(findtext(haystack, needle)) //success
 				dialogue_timer_current = 0 //resets dialogue timer to also prevent awkward dialogue spam
 				awaiting_response = needle
+				last_speaker = source
 				addtimer(CALLBACK(src, PROC_REF(echo_success)), dialogue_delay, TIMER_UNIQUE | TIMER_DELETE_ME) //short delay to make dialogue seem more natural
 				return
 
