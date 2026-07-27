@@ -4,7 +4,8 @@
 	wander = 0
 
 	var/nanotrasen_id = "Identification: NT-ARDB-000"
-	var/hazard_labels = "Cognitohazard"
+	var/primary_hazard_labels = "Cognitohazard"
+	var/secondary_hazard_labels = "Conceptual alteration"
 	var/initial_line = "Hello!"
 	var/hidden_description = "ooOOoo"
 	var/list/dialogue_lines = list(
@@ -19,6 +20,7 @@
 	var/interaction_cooldown_current = 0
 	var/interaction_cooldown = 2
 	var/list/active_links
+	var/last_response = "None"
 
 /mob/living/simple_animal/formic/Initialize(mapload)
 	. = ..()
@@ -53,6 +55,7 @@
 		interaction_cooldown_current = interaction_cooldown
 		if(successful_echo == "who are you")
 			say("Insert response here.")
+			last_response = "who are you"
 		return
 
 /mob/living/simple_animal/formic/proc/establish_link(mob/living/target)

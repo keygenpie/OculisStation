@@ -267,7 +267,8 @@
 	var/message = list()
 
 	message += span_notice(analyzed_form.nanotrasen_id + ": " + analyzed_form.name)
-	message += span_notice("Hazard Label(s): " + analyzed_form.hazard_labels)
+	message += span_notice("Primary Hazard Label(s): " + analyzed_form.primary_hazard_labels)
+	message += span_notice("Secondary Hazard Label(s): " + analyzed_form.secondary_hazard_labels)
 	message += span_notice("Database Description: " + analyzed_form.hidden_description)
 	message += span_notice("<b>Detected Echoes:</b>")
 	for(var/echo in analyzed_form.echoes)
