@@ -19,8 +19,10 @@
 	var/dialogue_timer = 30
 	var/interaction_cooldown_current = 0
 	var/interaction_cooldown = 2
+	var/dialogue_delay = 4
 	var/list/active_links
 	var/last_response = "None"
+	var/awaiting_response
 
 /mob/living/simple_animal/formic/Initialize(mapload)
 	. = ..()
@@ -45,18 +47,21 @@
 /mob/living/simple_animal/formic/proc/respond_to_command(datum/source, list/hearing_args)
 	SIGNAL_HANDLER
 	var/haystack = hearing_args[SPEECH_MESSAGE]
-	for(var/needle in echoes)
-		if(findtext(haystack, needle)) //success
-			echo_success(needle)
-			return
-
-/mob/living/simple_animal/formic/proc/echo_success(successful_echo) //put interactions here
 	if(interaction_cooldown_current <= 0) //brief cooldown to ensure interactions are not spammed
 		interaction_cooldown_current = interaction_cooldown
-		if(successful_echo == "who are you")
-			say("Insert response here.")
-			last_response = "who are you"
-		return
+		for(var/needle in echoes)
+			if(findtext(haystack, needle)) //success
+				dialogue_timer_current = 0 //resets dialogue timer to also prevent awkward dialogue spam
+				awaiting_response = needle
+				addtimer(CALLBACK(src, PROC_REF(echo_success)), dialogue_delay, TIMER_UNIQUE | TIMER_DELETE_ME) //short delay to make dialogue seem more natural
+				return
+
+/mob/living/simple_animal/formic/proc/echo_success() //put interactions here
+	var/successful_echo = awaiting_response
+	if(successful_echo == "who are you")
+		say("Insert response here.")
+		last_response = "who are you"
+	return
 
 /mob/living/simple_animal/formic/proc/establish_link(mob/living/target)
 	if(!active_links) //if list is not made yet, make it. errors otherwise because list doesnt exist yet
