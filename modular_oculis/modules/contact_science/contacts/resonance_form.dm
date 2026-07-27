@@ -3,7 +3,7 @@
 	desc = "An anomalous contact, brought forth from the Storm."
 	wander = 0
 
-	var/nanotrasen_id = "Identification: NT-ARDB-000"
+	var/nanotrasen_id = "NT-ARDB-000"
 	var/primary_hazard_labels = "Cognitohazard"
 	var/secondary_hazard_labels = "Conceptual alteration"
 	var/initial_line = "Hello!"
