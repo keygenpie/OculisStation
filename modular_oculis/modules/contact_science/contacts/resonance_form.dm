@@ -25,6 +25,7 @@
 	var/last_response = "None"
 	var/last_speaker
 	var/awaiting_response
+	var/rotation_target
 
 /mob/living/simple_animal/formic/Initialize(mapload)
 	. = ..()
@@ -38,6 +39,8 @@
 		dialogue_timer_current += seconds_per_tick
 		if(dialogue_timer_current >= dialogue_timer)
 			perform_dialogue()
+	if(rotation_target)
+		dir = get_cardinal_dir(src, rotation_target)
 
 /mob/living/simple_animal/formic/proc/perform_dialogue()
 	dialogue_timer_current = 0
@@ -48,7 +51,7 @@
 
 /mob/living/simple_animal/formic/proc/respond_to_command(datum/source, list/hearing_args)
 	SIGNAL_HANDLER
-	dir = get_cardinal_dir(src, source)
+	rotation_target = source
 	var/haystack = hearing_args[SPEECH_MESSAGE]
 	if(interaction_cooldown_current <= 0) //brief cooldown to ensure interactions are not spammed
 		interaction_cooldown_current = interaction_cooldown
@@ -68,7 +71,7 @@
 	return
 
 /mob/living/simple_animal/formic/proc/establish_link(mob/living/target)
-	dir = get_cardinal_dir(src, target)
+	rotation_target = target
 	if(!active_links) //if list is not made yet, make it. errors otherwise because list doesnt exist yet
 		RegisterSignal(target, COMSIG_MOB_SAY, PROC_REF(respond_to_command))
 		active_links = list(target)
