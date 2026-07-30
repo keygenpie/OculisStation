@@ -23,7 +23,7 @@
 	var/dialogue_delay = 4
 	var/list/active_links
 	var/last_response = "None"
-	var/last_speaker
+	var/mob/living/carbon/human/last_speaker
 	var/awaiting_response
 	var/rotation_target
 
@@ -49,7 +49,7 @@
 	var/performed_dialogue = pick(dialogue_lines)
 	say(performed_dialogue)
 
-/mob/living/simple_animal/formic/proc/respond_to_command(datum/source, list/hearing_args)
+/mob/living/simple_animal/formic/proc/respond_to_command(mob/living/carbon/human/source, list/hearing_args)
 	SIGNAL_HANDLER
 	rotation_target = source
 	var/haystack = hearing_args[SPEECH_MESSAGE]
