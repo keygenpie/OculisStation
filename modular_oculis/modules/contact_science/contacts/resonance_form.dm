@@ -2,6 +2,7 @@
 	name = "anomalous resonance form"
 	desc = "An anomalous contact, brought forth from the Storm."
 	wander = 0
+	density = 0
 
 	var/nanotrasen_id = "NT-ARDB-000"
 	var/primary_hazard_labels = "Cognitohazard"
@@ -47,6 +48,7 @@
 
 /mob/living/simple_animal/formic/proc/respond_to_command(datum/source, list/hearing_args)
 	SIGNAL_HANDLER
+	dir = get_cardinal_dir(src, source)
 	var/haystack = hearing_args[SPEECH_MESSAGE]
 	if(interaction_cooldown_current <= 0) //brief cooldown to ensure interactions are not spammed
 		interaction_cooldown_current = interaction_cooldown
@@ -66,6 +68,7 @@
 	return
 
 /mob/living/simple_animal/formic/proc/establish_link(mob/living/target)
+	dir = get_cardinal_dir(src, target)
 	if(!active_links) //if list is not made yet, make it. errors otherwise because list doesnt exist yet
 		RegisterSignal(target, COMSIG_MOB_SAY, PROC_REF(respond_to_command))
 		active_links = list(target)
