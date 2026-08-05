@@ -161,6 +161,9 @@
 	circuit = /obj/item/circuitboard/machine/contactplatform
 	var/obj/machinery/contactscanner/linkedscanner
 	var/failure_chance = 10
+	var/list/mobslist = list(
+		/mob/living/simple_animal/formic/philosophers_camera
+	)
 
 /obj/machinery/contactplatform/crowbar_act(mob/user, obj/item/tool)
 	return default_deconstruction_crowbar(user, tool)
@@ -200,11 +203,8 @@
 		linkedscanner.fail_spawn()
 		return
 	else //spawn resonance form here
-		var/list/resonance_forms
-		for(var/T in typesof(/mob/living/simple_animal/formic))
-			resonance_forms += T
 		var/chosen
-		chosen = pick(resonance_forms)
+		chosen = pick(mobslist)
 		var/mob/living/simple_animal/formic/spawnedform = new chosen(get_turf(src))
 		linkedscanner.contacted_form = spawnedform
 		return
