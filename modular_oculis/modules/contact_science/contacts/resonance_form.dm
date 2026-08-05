@@ -26,6 +26,7 @@
 	var/mob/living/carbon/human/last_speaker
 	var/awaiting_response
 	var/rotation_target
+	var/hearing_range = 9
 
 /mob/living/simple_animal/formic/Initialize(mapload)
 	. = ..()
@@ -53,7 +54,7 @@
 	SIGNAL_HANDLER
 	rotation_target = source
 	var/haystack = hearing_args[SPEECH_MESSAGE]
-	if(interaction_cooldown_current <= 0) //brief cooldown to ensure interactions are not spammed
+	if(interaction_cooldown_current <= 0 && get_dist(src, source) <= hearing_range) //brief cooldown to ensure interactions are not spammed, and a hearing distance check
 		interaction_cooldown_current = interaction_cooldown
 		for(var/needle in echoes)
 			if(findtext(haystack, needle)) //success
