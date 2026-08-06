@@ -251,13 +251,13 @@
 	var/scan_distance = 5
 
 /obj/item/contactanalyzer/ranged_interact_with_atom(atom/interacting_with, mob/living/user, list/modifiers)
-	if(istype(interacting_with, /mob/living/simple_animal/formic) && can_see(user, interacting_with, scan_distance))
+	if(istype(interacting_with, /mob/living/simple_animal/formic) && can_see(user, interacting_with, scan_distance) && do_after(user, 2 SECONDS, src))
 		var/mob/living/simple_animal/formic/analyzed_mob = interacting_with
 		analyze_form(analyzed_mob, user)
 		return ITEM_INTERACT_SUCCESS
 
 /obj/item/contactanalyzer/interact_with_atom(atom/interacting_with, mob/living/user, list/modifiers)
-	if(istype(interacting_with, /mob/living/simple_animal/formic) && can_see(user, interacting_with, scan_distance))
+	if(istype(interacting_with, /mob/living/simple_animal/formic) && can_see(user, interacting_with, scan_distance) && do_after(user, 2 SECONDS, src))
 		var/mob/living/simple_animal/formic/analyzed_mob = interacting_with
 		analyze_form(analyzed_mob, user)
 		return ITEM_INTERACT_SUCCESS
