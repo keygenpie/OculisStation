@@ -119,7 +119,6 @@
 		balloon_alert(user, "scanning for contact signal!")
 		return ITEM_INTERACT_SUCCESS
 
-
 /obj/machinery/contactscanner/proc/summon_forth()
 	fuel -= 1
 	active_contact = TRUE
@@ -140,6 +139,10 @@
 		scanning_time += seconds_per_tick
 		if(scanning_time >= operation_time * 2)
 			summon_forth()
+	if(active_contact && QDELETED(contacted_form))
+		use_power = IDLE_POWER_USE
+		active_contact = FALSE
+		update_icon_state()
 
 /obj/item/circuitboard/machine/contactscanner
 	name = "Formic Scanner"
