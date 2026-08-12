@@ -165,7 +165,8 @@
 	var/obj/machinery/contactscanner/linkedscanner
 	var/failure_chance = 10
 	var/list/mobslist = list(
-		/mob/living/simple_animal/formic/philosophers_camera
+		/mob/living/simple_animal/formic/philosophers_camera,
+		/mob/living/simple_animal/formic/forgotten_forge
 	)
 
 /obj/machinery/contactplatform/crowbar_act(mob/user, obj/item/tool)

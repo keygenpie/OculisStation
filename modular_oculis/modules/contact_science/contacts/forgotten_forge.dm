@@ -6,8 +6,8 @@
 
 	nanotrasen_id = "NT-ARDB-002"
 	primary_hazard_labels = "Somatohazard"
-	secondary_hazard_labels = "Bodily alteration"
-	initial_line = "Come forth, and be changed, changed."
+	secondary_hazard_labels = "Bodily alteration, hostile manifestation"
+	initial_line = "We must prepare for your trial. Come forth, and be changed, changed."
 	hidden_description = "An artificial heart, its internals powered by brass clockwork. We theorize it to be some kind of remnant or memory of the long-forgotten 'Clockwork Cult.' It seems to express a desire to provide augmentation in preparation for something."
 	dialogue_lines = list(
 		"Even in this age of stagnation, I am present, present.",
@@ -20,31 +20,35 @@
 		"Pledge loyalty, and I will improve you, improve you."
 	)
 	echoes = list(
-		"i present myself"
+		"i present myself",
 		"i present my blade"
 	)
 
 	var/loyalty = 0 //goes up by 1 with each augmentation, similar to Philosopher's Camera.
+	var/loyalty_threshold = 6 //at the threshold, breach
 	var/firstaugment = TRUE //after first augment, unlock new echoes
+	var/breaching = FALSE
 
 /mob/living/simple_animal/formic/forgotten_forge/echo_success()
 	var/successful_echo = awaiting_response
-	if(successful_echo == "i present myself")
+	if(successful_echo == "i present myself") //install a random unique implant into yourself, take damage to the implanted limb
 		last_response = "i present myself"
 		if(get_dist(src, last_speaker) > 1) //must be adjacent
 			say("Come closer, closer.")
 		else
 			give_augment(0)
-	if(successful_echo == "i present my blade")
+	if(successful_echo == "i present my blade") //give a random upgrade to one of your weapons, take damage to a random limb
 		last_response = "i present my blade"
 		if(get_dist(src, last_speaker) > 1)
 			say("Bring it closer, closer.")
 		else
 			give_upgrades()
+	if(successful_echo == "why are you here") //simple dialogue, meant to hint at the containment breach
+		say("Something great is coming. You must be ready to embrace it, embrace it.")
 
 /mob/living/simple_animal/formic/forgotten_forge/proc/give_upgrades() //for both hands, find weapons and give them random upgrades
 	var is_success = FALSE
-	for(var/upgrading_item in last_speaker.held_items)
+	for(var/obj/item/upgrading_item in last_speaker.held_items)
 		var/upgrade_type = rand(1,3)
 		if(!findtext(upgrading_item.name, "brass-")) //if not already augmented, simply works off of name
 			if(istype(upgrading_item, /obj/item/gun))
@@ -68,7 +72,7 @@
 					to_chat(last_speaker, span_notice("The " + upgrading_gun.name + " becomes lightened. Its burdens are removed."))
 					upgrading_gun.name = "brass-lightened " + upgrading_gun.name
 					is_success = TRUE
-			if(istype(upgrading_item, /obj/item/melee) || istype(upgrading_item, /obj/item/spear))
+			else if(istype(upgrading_item, /obj/item) && upgrading_item.force > 10) //only upgrades if the item has enough force for it to consider the item a melee weapon. yes toolboxes apply
 				var/obj/item/upgrading_melee = upgrading_item
 				if(upgrade_type == 1) //make weapon better at blocking
 					upgrading_melee.block_chance += 20
@@ -90,12 +94,12 @@
 		loyalty += 1
 		var/limb_to_hit = last_speaker.get_bodypart(last_speaker.get_random_valid_zone(even_weights = TRUE))
 		last_speaker.apply_damage(loyalty * 5, BRUTE, limb_to_hit, wound_bonus=CANT_WOUND)
-		to_chat(last_speaker, span_warning("An ache creeps around your body."))
+		to_chat(last_speaker, span_warning("An ache creeps around your body, like a serpent searching for a point to sink its teeth into."))
 		playsound(last_speaker, 'sound/effects/magic/staff_healing.ogg', 50)
 		if(firstaugment) //different lines if first upgrade, also first upgrade unlocks echoes
 			say("Feel the brass in your hands, hands.")
 			firstaugment = FALSE
-			echoes += "am i ready"
+			echoes += "why are you here"
 			balloon_alert(last_speaker, "new echoes detected!")
 		else
 			say("Feel the brass in your hands, loyal one, loyal one.")
@@ -110,11 +114,64 @@
 		say("Your body is already prepared, prepared.")
 		return
 	var/list/potential_implants = list(
-		/obj/item/organ/cyberimp/arm/toolkit/clockwork_spear/left_arm
-		/obj/item/organ/cyberimp/arm/toolkit/clockwork_spear/right_arm
+		/obj/item/organ/cyberimp/arm/toolkit/clockwork_spear/left_arm,
+		/obj/item/organ/cyberimp/arm/toolkit/clockwork_spear/right_arm,
+		/obj/item/organ/cyberimp/arm/toolkit/shell_launcher/clockwork,
+		/obj/item/organ/cyberimp/arm/toolkit/shell_launcher/clockwork/l,
+		/obj/item/organ/cyberimp/chest/clockwork_regen
 	)
 	var/obj/item/organ/chosen_implant = pick(potential_implants)
-	if(!chosen_implant.Insert(last_speaker)) // pick a special implant and try to insert
+	var/obj/item/organ/plooby = new chosen_implant
+	if(!plooby.mob_insert(last_speaker)) // pick a special implant and try to insert
 		give_augment(num_loops + 1) //increase number of tries by 1 and retry on failing
+		qdel(plooby)
 		return
 	else
+		loyalty += 1
+		say("You are changed for the greater, greater.")
+		playsound(last_speaker, 'sound/effects/magic/staff_healing.ogg', 50)
+		last_speaker.apply_damage(loyalty * 5, BRUTE, chosen_implant.zone, wound_bonus=CANT_WOUND)
+		to_chat(last_speaker, span_warning("An ache festers within your body as a " + chosen_implant.name + " is inserted into you."))
+
+/mob/living/simple_animal/formic/forgotten_forge/Life(seconds_per_tick = SSMOBS_DT)
+	. = ..()
+
+	if(loyalty >= loyalty_threshold) //if meeting the threshold, breach
+		say("Finally, you are ready for your trial. Allow your brass to carry you to victory, victory.")
+		sound_to_playing_players('sound/effects/magic/lightning_chargeup.ogg')
+		addtimer(CALLBACK(src, PROC_REF(breach)), 8, TIMER_UNIQUE | TIMER_DELETE_ME)
+
+/mob/living/simple_animal/formic/forgotten_forge/proc/breach()
+	priority_announce("An anomalous resonance form has breached containment within [station_name()]. Please route to subdue the hostile form.")
+	new /mob/living/simple_animal/hostile/megafauna/clockwork_defender/true(get_turf(src))
+	src.gib(DROP_ALL_REMAINS)
+
+/mob/living/simple_animal/hostile/megafauna/clockwork_defender/true
+	name = "true clockwork defender"
+	desc = "So this is what it was preparing you for."
+	health = 750
+	maxHealth = 750
+	speed = 3
+	ranged = TRUE
+	ranged_cooldown_time = 30
+	gps_name = "True Signal"
+	attack_sound = 'modular_nova/master_files/sound/weapons/bloodyslice.ogg'
+
+/mob/living/simple_animal/hostile/megafauna/clockwork_defender/true/OpenFire()
+	if(prob(50)) //50/50 between far throw and close charge-attack throw
+		INVOKE_ASYNC(src, PROC_REF(spear_throw), target)
+	else
+		INVOKE_ASYNC(src, PROC_REF(charge_attack), target)
+
+/mob/living/simple_animal/hostile/megafauna/clockwork_defender/true/proc/spear_throw(atom/target)
+	var/obj/item/clockwork/weapon/brass_spear/to_throw = new /obj/item/clockwork/weapon/brass_spear(get_turf(src))
+	to_throw.throwforce = 35
+	playsound(src, 'sound/items/weapons/bolathrow.ogg', 60, 0)
+	to_throw.throw_at(target, 7, 3, thrower = src)
+	QDEL_IN(to_throw, 3 SECONDS)
+
+/mob/living/simple_animal/hostile/megafauna/clockwork_defender/true/proc/charge_attack(atom/target)
+	var/relative_direction = get_dir(src, target)
+	var/atom/throw_target = get_edge_target_turf(target, relative_direction)
+	src.throw_at(throw_target, 2, 2, src, gentle = TRUE)
+	spear_throw(target)
