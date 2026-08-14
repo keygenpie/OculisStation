@@ -27,11 +27,13 @@
 	var/awaiting_response
 	var/rotation_target
 	var/hearing_range = 9
+	var/anchored_turf
 
 /mob/living/simple_animal/formic/Initialize(mapload)
 	. = ..()
 	say(initial_line)
 	add_traits(list(TRAIT_GODMODE, TRAIT_IMMOBILIZED, TRAIT_AGENDER, TRAIT_NO_STAGGER), src)
+	anchored_turf = get_turf(src)
 
 /mob/living/simple_animal/formic/Life(seconds_per_tick = SSMOBS_DT)
 	. = ..()
@@ -43,6 +45,9 @@
 			perform_dialogue()
 	if(rotation_target)
 		dir = get_cardinal_dir(src, rotation_target)
+	if(get_turf(src) != anchored_turf)
+		do_teleport(src, anchored_turf, 0, channel = TELEPORT_CHANNEL_BLUESPACE, forced = TRUE)
+		balloon_alert(src, "containment anchor engaged!")
 
 /mob/living/simple_animal/formic/proc/perform_dialogue()
 	dialogue_timer_current = 0
