@@ -31,6 +31,7 @@
 /mob/living/simple_animal/formic/Initialize(mapload)
 	. = ..()
 	say(initial_line)
+	add_traits(list(TRAIT_GODMODE, TRAIT_IMMOBILIZED, TRAIT_AGENDER, TRAIT_NO_STAGGER), src)
 
 /mob/living/simple_animal/formic/Life(seconds_per_tick = SSMOBS_DT)
 	. = ..()
