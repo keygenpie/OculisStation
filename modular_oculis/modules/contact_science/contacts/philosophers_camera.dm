@@ -28,7 +28,7 @@
 	var/decay_level = 0 //taking pictures slowly accumulates decay, which transforms the environment
 	VAR_PRIVATE/atom/movable/light_holder
 
-/mob/living/simple_animal/formic/philosophers_camera/Initialize() //establish stuff for camera flash
+/mob/living/simple_animal/formic/philosophers_camera/Initialize(mapload) //establish stuff for camera flash
 	. = ..()
 	var/atom/movable/parent = loc
 	light_holder = src
