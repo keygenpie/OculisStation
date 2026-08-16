@@ -153,7 +153,10 @@
 	maxHealth = 750
 	speed = 3
 	ranged = TRUE
-	ranged_cooldown_time = 30
+	ranged_cooldown_time = 90
+	melee_damage_lower = 15
+	melee_damage_upper = 30
+	melee_damage_type = BRUTE
 	gps_name = "True Signal"
 	attack_sound = 'modular_nova/master_files/sound/weapons/bloodyslice.ogg'
 
