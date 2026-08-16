@@ -95,6 +95,9 @@ Remember to update _globalvars/traits.dm if you're adding/removing/renaming trai
 #define TRAIT_SOFTSPOKEN "softspoken"
 /// Gibs on death and slips like ice.
 #define TRAIT_CURSED "cursed"
+//OCULIS EDIT ADDITION START - CONTACT_SCIENCE - Adds a trait which cancels the Cursed trait for the Black Cat's Cloak
+#define TRAIT_CURSED_SUPPRESS "curse suppression"
+//OCULIS EDIT ADDITION END
 /// Emotemute. Can't... emote.
 #define TRAIT_EMOTEMUTE "emotemute"
 #define TRAIT_DEAF "deaf"
