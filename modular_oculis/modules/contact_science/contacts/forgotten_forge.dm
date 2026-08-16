@@ -149,8 +149,8 @@
 /mob/living/simple_animal/hostile/megafauna/clockwork_defender/true
 	name = "true clockwork defender"
 	desc = "So this is what it was preparing you for."
-	health = 750
-	maxHealth = 750
+	health = 350
+	maxHealth = 350
 	speed = 3
 	ranged = TRUE
 	ranged_cooldown_time = 90
