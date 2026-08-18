@@ -32,8 +32,8 @@
 
 	var/list/obj/item/potential_rewards = list(
 		/obj/item/clothing/glasses/night/panopticon,
-		/obj/item/wallframe/camera/all,
-		/obj/item/ammo_casing/shotgun/panopticon
+		/obj/item/organ/eyes/robotic/binoculars/panopticon,
+		/obj/item/organ/ears/cybernetic/whisper/panopticon
 	)
 
 /mob/living/simple_animal/formic/panopticon_beast/Life(seconds_per_tick = SSMOBS_DT)
@@ -107,7 +107,7 @@
 	say("Reward.")
 
 /obj/item/clothing/glasses/night/panopticon //unique reward, special NVGs which grant invisibility sight
-	name = "panopticon vision goggles"
+	name = "panopticon goggles"
 	desc = "A pair of night-vision goggles with antiperceptive sensors. You can't turn them off."
 	icon = 'modular_oculis/modules/contact_science/icons/observer_items.dmi'
 	icon_state = "night"
@@ -117,17 +117,35 @@
 	invis_override = 50
 	actions_types = null //no turning them off
 
-/obj/item/wallframe/camera/all //unique reward, camera assembly which autoinstalls with all upgrades. the panopticon wants more eyes
+/obj/item/wallframe/camera/all //cut unique reward, camera assembly which autoinstalls with all upgrades. the panopticon wants more eyes. cut because its kinda lame
 	name = "panopticon camera assembly"
 	desc = "An automatic construction assembly for a fully-upgraded camera."
 	result_path = /obj/machinery/camera/all
 
-/obj/item/ammo_casing/shotgun/panopticon //unique reward, shotgun shell with the breach monster's projectile
+/obj/item/ammo_casing/shotgun/panopticon //cut unique reward, shotgun shell with the breach monster's projectile. cut for not really fitting, kept for admin shenanigans
 	name = "forever gaze"
 	desc = "A strange shotgun shell, loaded with... what is that? It feels hungry."
 	icon = 'modular_oculis/modules/contact_science/icons/observer_items.dmi'
 	icon_state = "panshell"
 	projectile_type = /obj/projectile/panopticon_ball
+
+/obj/item/organ/eyes/robotic/binoculars/panopticon //unique reward, digital magnification optics with night vision
+	name = "panopticon optics"
+	desc = "A pair of cybernetic eyes with night vision and zoom capabilities. They look eager to surveil."
+	icon = 'modular_oculis/modules/contact_science/icons/observer_items.dmi'
+	icon_state = "eyes"
+	eye_color_left = "#ffffff"
+	eye_color_right = "#ffffff"
+	organ_flags = ORGAN_ROBOTIC
+	color_cutoffs = list(15, 15, 15)
+
+/obj/item/organ/ears/cybernetic/whisper/panopticon //unique reward, cybernetic ears with whisper-hearing and xray hearing
+	name = "panopticon ears"
+	desc = "A pair of hypersensitive cybernetic ears with whisper sensitivity and wall-ignorant audioperception. They look hungry for whispers."
+	icon = 'modular_oculis/modules/contact_science/icons/observer_items.dmi'
+	icon_state = "ears"
+	organ_traits = list(TRAIT_GOOD_HEARING, TRAIT_XRAY_HEARING)
+	damage_multiplier = 2.5
 
 /mob/living/simple_animal/hostile/panopticon_beast //breaching version
 	name = "Panopticon Beast"
