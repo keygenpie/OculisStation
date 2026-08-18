@@ -33,7 +33,8 @@
 	var/list/obj/item/potential_rewards = list(
 		/obj/item/clothing/glasses/night/panopticon,
 		/obj/item/organ/eyes/robotic/binoculars/panopticon,
-		/obj/item/organ/ears/cybernetic/whisper/panopticon
+		/obj/item/organ/ears/cybernetic/whisper/panopticon,
+		/obj/item/clothing/glasses/meson/panopticon
 	)
 
 /mob/living/simple_animal/formic/panopticon_beast/Life(seconds_per_tick = SSMOBS_DT)
@@ -146,6 +147,14 @@
 	icon_state = "ears"
 	organ_traits = list(TRAIT_GOOD_HEARING, TRAIT_XRAY_HEARING)
 	damage_multiplier = 2.5
+
+/obj/item/clothing/glasses/meson/panopticon
+	name = "panopticon visor"
+	desc = "A pair of meson goggles which channels your hearing into the ability to see life-matrices through walls, at the price of deafness."
+	icon = 'modular_oculis/modules/contact_science/icons/observer_items.dmi'
+	icon_state = "meson"
+	vision_flags = SEE_MOBS | SEE_TURFS
+	clothing_traits = list(TRAIT_MADNESS_IMMUNE, TRAIT_DEAF)
 
 /mob/living/simple_animal/hostile/panopticon_beast //breaching version
 	name = "Panopticon Beast"
