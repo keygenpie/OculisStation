@@ -136,10 +136,11 @@
 /mob/living/simple_animal/formic/forgotten_forge/Life(seconds_per_tick = SSMOBS_DT)
 	. = ..()
 
-	if(loyalty >= loyalty_threshold) //if meeting the threshold, breach
+	if(loyalty >= loyalty_threshold && !breaching) //if meeting the threshold, breach
+		breaching = TRUE
 		say("Finally, you are ready for your trial. Allow your brass to carry you to victory, victory.")
 		sound_to_playing_players('sound/effects/magic/lightning_chargeup.ogg')
-		addtimer(CALLBACK(src, PROC_REF(breach)), 8, TIMER_UNIQUE | TIMER_DELETE_ME)
+		addtimer(CALLBACK(src, PROC_REF(breach)), 80, TIMER_UNIQUE | TIMER_DELETE_ME)
 
 /mob/living/simple_animal/formic/forgotten_forge/proc/breach()
 	priority_announce("An anomalous resonance form has breached containment within [station_name()]. Please route to subdue the hostile form.")
@@ -151,17 +152,23 @@
 	desc = "So this is what it was preparing you for."
 	health = 350
 	maxHealth = 350
-	speed = 3
+	speed = 4
 	ranged = TRUE
-	ranged_cooldown_time = 90
+	ranged_cooldown_time = 120
 	melee_damage_lower = 15
 	melee_damage_upper = 30
 	melee_damage_type = BRUTE
 	gps_name = "True Signal"
 	attack_sound = 'modular_nova/master_files/sound/weapons/bloodyslice.ogg'
+	death_sound = 'sound/effects/magic/staff_healing.ogg'
+	ranged_ignores_vision = FALSE
+
+/mob/living/simple_animal/hostile/megafauna/clockwork_defender/true/Initialize(mapload)
+	. = ..()
+	loot = list(/obj/item/clockwork_alloy) //re-override loot list because something else makes it spawn the book. no book from this one
 
 /mob/living/simple_animal/hostile/megafauna/clockwork_defender/true/OpenFire()
-	if(prob(50)) //50/50 between far throw and close charge-attack throw
+	if(prob(50)) //50/50 between far throw and charge-attack
 		INVOKE_ASYNC(src, PROC_REF(spear_throw), target)
 	else
 		INVOKE_ASYNC(src, PROC_REF(charge_attack), target)
@@ -170,11 +177,10 @@
 	var/obj/item/clockwork/weapon/brass_spear/to_throw = new /obj/item/clockwork/weapon/brass_spear(get_turf(src))
 	to_throw.throwforce = 35
 	playsound(src, 'sound/items/weapons/bolathrow.ogg', 60, 0)
-	to_throw.throw_at(target, 7, 3, thrower = src)
+	to_throw.throw_at(target, 12, 5, thrower = src)
 	QDEL_IN(to_throw, 3 SECONDS)
 
 /mob/living/simple_animal/hostile/megafauna/clockwork_defender/true/proc/charge_attack(atom/target)
 	var/relative_direction = get_dir(src, target)
 	var/atom/throw_target = get_edge_target_turf(target, relative_direction)
-	src.throw_at(throw_target, 2, 2, src, gentle = TRUE)
-	spear_throw(target)
+	src.throw_at(throw_target, 3, 3, src, gentle = TRUE)
