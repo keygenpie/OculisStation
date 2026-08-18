@@ -167,7 +167,8 @@
 	var/list/mobslist = list(
 		/mob/living/simple_animal/formic/philosophers_camera,
 		/mob/living/simple_animal/formic/forgotten_forge,
-		/mob/living/simple_animal/formic/black_cat
+		/mob/living/simple_animal/formic/black_cat,
+		/mob/living/simple_animal/formic/panopticon_beast
 	)
 
 /obj/machinery/contactplatform/crowbar_act(mob/user, obj/item/tool)
