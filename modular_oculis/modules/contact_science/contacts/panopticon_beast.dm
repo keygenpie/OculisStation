@@ -28,7 +28,6 @@
 	var/rewards = 0 //gain 1 reward per 3 points
 	var/feeding_timer = 220
 	var/feeding_timer_current = 220 //dont let it get hungry!
-	var/breaching = FALSE
 
 	var/list/obj/item/potential_rewards = list(
 		/obj/item/clothing/glasses/night/panopticon,

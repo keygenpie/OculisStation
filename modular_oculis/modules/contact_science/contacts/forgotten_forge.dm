@@ -27,7 +27,6 @@
 	var/loyalty = 0 //goes up by 1 with each augmentation, similar to Philosopher's Camera.
 	var/loyalty_threshold = 6 //at the threshold, breach
 	var/firstaugment = TRUE //after first augment, unlock new echoes
-	var/breaching = FALSE
 
 /mob/living/simple_animal/formic/forgotten_forge/echo_success()
 	var/successful_echo = awaiting_response

@@ -28,6 +28,7 @@
 	var/rotation_target
 	var/hearing_range = 9
 	var/anchored_turf
+	var/breaching = FALSE
 
 /mob/living/simple_animal/formic/Initialize(mapload)
 	. = ..()
