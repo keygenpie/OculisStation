@@ -104,6 +104,9 @@
 
 	//successful interactions
 	if(active_contact) //shut down contact
+		if(contacted_form.breaching)
+			balloon_alert(user, "can't shut it down!")
+			return ITEM_INTERACT_FAILURE
 		balloon_alert(user, "contact shutting down!")
 		if(do_after(user, operation_time SECONDS, src))
 			use_power = IDLE_POWER_USE
