@@ -3,6 +3,7 @@
 	desc = "An anomalous contact, brought forth from the Storm."
 	wander = 0
 	density = 0
+	mob_biotypes = MOB_SPECIAL
 
 	var/nanotrasen_id = "NT-ARDB-000"
 	var/primary_hazard_labels = "Cognitohazard"
