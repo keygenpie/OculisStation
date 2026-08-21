@@ -171,7 +171,8 @@
 		/mob/living/simple_animal/formic/philosophers_camera,
 		/mob/living/simple_animal/formic/forgotten_forge,
 		/mob/living/simple_animal/formic/black_cat,
-		/mob/living/simple_animal/formic/panopticon_beast
+		/mob/living/simple_animal/formic/panopticon_beast,
+		/mob/living/simple_animal/formic/mourning_umbrella
 	)
 
 /obj/machinery/contactplatform/crowbar_act(mob/user, obj/item/tool)

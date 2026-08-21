@@ -26,19 +26,25 @@
 
 	var/dissipation_timer = 600
 	var/dissipation_timer_current = 600 //a boon comes when the rain dissipates
-	var/death_points = 2 //when this many people die in the presence of the rain, the umbrella causes a breach
-	var/breaching = FALSE
+	var/death_points = 1 //when this many people die in the presence of the rain, the umbrella causes a breach
+	var/scan_reduction_factor = 20
+	var/scan_reduction_reduction = 4
+	var/butterfly_rate = 20 //chance to spawn a butterfly per tile in an area when breaching
+	var/max_butterflies = 12 //to prevent a ridiculous amount of spawns in big areas
 
 	//weather stuff, mostly copied from weather anomaly code
-	var/rain_type = /datum/weather/particle/rain_storm
+	var/datum/weather/particle/rain_type = /datum/weather/particle/rain_storm
 	var/thunder_chance = THUNDER_CHANCE_HIGH
 	var/area/weather_area
 	VAR_PRIVATE/list/active_weathers
-	var/telegraph = dissipation_timer / 15 // 1/15th of the time is dedicated to telegraphing, to give people time to get outta the way
-	var/end_dur = dissipation_timer / 15 // then 1/15th of the time is dedicated to winding down
-	var/total_dur = dissipation_timer - telegraph - end_dur
+	var/telegraph = 10 SECONDS // time dedicated to telegraphing, to give people time to get outta the way
+	var/end_dur = 1 SECONDS // time dedicated to winding down
+	var/total_dur = 1200 SECONDS //arbitrarily large. itll end when the umbrella is gone regardless
+
+	var/list/crew_data
 
 /mob/living/simple_animal/formic/mourning_umbrella/Initialize(mapload)
+	. = ..()
 	weather_area = get_area(src)
 	var/list/num_turfs = length(weather_area.get_turfs_from_all_zlevels())
 	active_weathers = list()
@@ -59,8 +65,30 @@
 
 /mob/living/simple_animal/formic/mourning_umbrella/proc/clear_weather(datum/weather/weather_datum)
 	SIGNAL_HANDLER
+	weather_datum.end()
 	active_weathers -= weather_datum
 	UnregisterSignal(weather_datum, COMSIG_QDELETING)
+
+/mob/living/simple_animal/formic/mourning_umbrella/Life(seconds_per_tick = SSMOBS_DT)
+	. = ..()
+	var/turf/this_turf = get_turf(src)
+	crew_data = GLOB.crewmonitor.update_data(this_turf.z) //get data to check for death
+	var/death_toll = 0 //number of current dead people
+	for(var/list/entry in crew_data)
+		if(entry["life_status"] == 4)
+			death_toll += 1
+	if(death_toll >= death_points && !breaching)
+		breaching = TRUE
+		sound_to_playing_players('sound/effects/magic/lightning_chargeup.ogg')
+		addtimer(CALLBACK(src, PROC_REF(breach)), 80, TIMER_UNIQUE | TIMER_DELETE_ME)
+		say("The rain has seen death. I cannot stop it any longer. Goodbye.")
+	if(!breaching)
+		dissipation_timer_current -= 1
+		if(dissipation_timer_current <= 0) //the timer is up. grant the boon
+			for(var/datum/weather/stopping in active_weathers)
+				clear_weather(stopping)
+			say("Finally, the rain passes. My boon is yours. May we pass again.")
+			addtimer(CALLBACK(src, PROC_REF(reward)), 5, TIMER_UNIQUE | TIMER_DELETE_ME)
 
 /mob/living/simple_animal/formic/mourning_umbrella/echo_success()
 	var/successful_echo = awaiting_response
@@ -82,12 +110,32 @@
 			say("The rain has passed somewhat, though there is plenty more.")
 		else
 			say("The rain has hardly passed yet.")
+	if(successful_echo == "what are you") //simple dialogue
+		last_response = "what are you"
+		say("An arbiter of the rain. It shall pass, so long as it does not sense death.")
+		echoes -= "what are you"
+		echoes += "what is the rain"
+		balloon_alert(last_speaker, "new echoes detected!")
+	if(successful_echo == "where is your hunger") //simple dialogue, only after it doesnt want to feed anymore
+		last_response = "where is your hunger"
+		say("There is only so much data I can feed the rain. Now, we must only allow its surveillance and bide our time.")
+	if(successful_echo == "what is the rain") //simple dialogue, only after asking what it is
+		if(last_response == "where is your hunger") //if fully fed before doing this dialogue and after performing the other dialogue, text changes. for fun really
+			last_response = "what is the rain"
+			say("It is what I feed the scans you provide me. It praises life, and your scans have certainly pleased it. But, only so much can be done.")
+		last_response = "what is the rain"
+		say("It watches your biometrics. It despises death, and praises life. When it rains, it pours.")
 
 /mob/living/simple_animal/formic/mourning_umbrella/proc/feed_biometric(mob/living/carbon/human/feeder)
 	var is_success = FALSE
 	for(var/obj/item/feeding_item in feeder.held_items)
 		if(istype(feeding_item, /obj/item/paper/medical_report)) //eat health scan
-			dissipation_timer_current -= 5 //reduce the max timer, little by little. it will pass eventually
+			dissipation_timer_current -= scan_reduction_factor //reduce the max timer, little by little. it will pass eventually
+			scan_reduction_factor -= scan_reduction_reduction //only so many papers can be submitted
+			if(scan_reduction_factor <= 0)
+				echoes -= "feed from my hand"
+				echoes += "where is your hunger"
+				balloon_alert(last_speaker, "new echoes detected!")
 			is_success = TRUE
 			to_chat(feeder, span_warning("The paper disappears as its essence is absorbed by the creature."))
 			qdel(feeding_item)
@@ -96,3 +144,58 @@
 		playsound(feeder, 'sound/effects/portal/portal_travel.ogg', 25)
 	else
 		say("This will not do. Present biometric data.")
+
+/mob/living/simple_animal/formic/mourning_umbrella/proc/breach()
+	var/butterflies_spawned = 0
+	priority_announce("An anomalous resonance form has breached containment within [station_name()]. Please route to subdue the hostile form.")
+	for(var/datum/weather/stopping in active_weathers)
+		clear_weather(stopping)
+	for(var/turf/butterfly_turf in weather_area)
+		if(prob(butterfly_rate))
+			new /mob/living/simple_animal/hostile/mourning_butterfly(butterfly_turf)
+			butterflies_spawned += 1
+			if(butterflies_spawned >= max_butterflies)
+				qdel(src)
+				return
+	qdel(src)
+
+/mob/living/simple_animal/formic/mourning_umbrella/proc/reward()
+	playsound(feeder, 'sound/effects/portal/portal_travel.ogg', 50)
+	qdel(src)
+
+/mob/living/simple_animal/hostile/mourning_butterfly
+	name = "mourning butterfly"
+	desc = "An aspect of the rain. Its razor-sharp wings smell of rot."
+	health = 80
+	maxHealth = 80
+	speed = 3
+	icon = 'modular_oculis/modules/contact_science/icons/mourning_umbrella.dmi'
+	icon_state = "butterfly"
+	environment_smash = ENVIRONMENT_SMASH_WALLS
+	melee_damage_lower = 5
+	melee_damage_upper = 10
+	melee_damage_type = BRUTE
+	obj_damage = 20
+	attack_sound = 'sound/items/weapons/bladeslice.ogg'
+	attack_vis_effect = ATTACK_EFFECT_SLASH
+	mob_size = MOB_SIZE_SMALL
+	attack_verb_continuous = "flies at"
+	attack_verb_simple = "fly at"
+	wound_bonus = 25
+	ai_controller = /datum/ai_controller/basic_controller/mournfly
+	rapid_melee = 2
+
+/datum/ai_controller/basic_controller/mournfly
+	blackboard = list(
+		BB_TARGETING_STRATEGY = /datum/targeting_strategy/basic,
+		BB_TARGET_MINIMUM_STAT = HARD_CRIT,
+	)
+
+	ai_movement = /datum/ai_movement/basic_avoidance
+	idle_behavior = /datum/idle_behavior/idle_random_walk
+	planning_subtrees = list(
+		/datum/ai_planning_subtree/escape_captivity,
+		/datum/ai_planning_subtree/simple_find_target,
+		/datum/ai_planning_subtree/attack_obstacle_in_path,
+		/datum/ai_planning_subtree/basic_melee_attack_subtree
+	)
