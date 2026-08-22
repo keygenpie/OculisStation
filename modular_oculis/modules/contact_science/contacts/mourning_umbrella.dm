@@ -26,8 +26,8 @@
 
 	var/dissipation_timer = 600
 	var/dissipation_timer_current = 600 //a boon comes when the rain dissipates
-	var/death_points = 1 //when this many people die in the presence of the rain, the umbrella causes a breach
-	var/scan_reduction_factor = 20
+	var/death_points = 2 //when this many people die in the presence of the rain, the umbrella causes a breach
+	var/scan_reduction_factor = 40
 	var/scan_reduction_reduction = 4
 	var/butterfly_rate = 20 //chance to spawn a butterfly per tile in an area when breaching
 	var/max_butterflies = 12 //to prevent a ridiculous amount of spawns in big areas
@@ -88,7 +88,7 @@
 			for(var/datum/weather/stopping in active_weathers)
 				clear_weather(stopping)
 			say("Finally, the rain passes. My boon is yours. May we pass again.")
-			addtimer(CALLBACK(src, PROC_REF(reward)), 5, TIMER_UNIQUE | TIMER_DELETE_ME)
+			addtimer(CALLBACK(src, PROC_REF(reward)), 30, TIMER_UNIQUE | TIMER_DELETE_ME)
 
 /mob/living/simple_animal/formic/mourning_umbrella/echo_success()
 	var/successful_echo = awaiting_response
@@ -160,8 +160,33 @@
 	qdel(src)
 
 /mob/living/simple_animal/formic/mourning_umbrella/proc/reward()
-	playsound(feeder, 'sound/effects/portal/portal_travel.ogg', 50)
+	playsound(src, 'sound/effects/portal/portal_travel.ogg', 50)
+	new /obj/item/gun/energy/cell_loaded/medigun/mourning(get_turf(src))
+	visible_message(span_warning("The umbrella dissipates just as the rain did, leaving behind a strange weapon."))
 	qdel(src)
+
+/obj/item/gun/energy/cell_loaded/medigun/mourning
+	name = "umbrella's boon"
+	desc = "An odd medigun with an umbrella shrouding its barrel. An inscription in its grip reads 'ABHOR DEATH, PRAISE LIFE.' Can be loaded with up to four medicells, and fires in three-round bursts."
+	icon = 'modular_oculis/modules/contact_science/icons/mourning_umbrella.dmi'
+	icon_state = "medigun"
+	inhand_icon_state = "riotgun" //close enough
+	maxcells = 4
+	selfcharge = 1
+	can_charge = FALSE
+	emp_resistance = 2
+	block_chance = 25
+	weapon_weight = WEAPON_MEDIUM
+	burst_size = 3
+	cell_type = /obj/item/stock_parts/power_store/cell/medigun/weeping
+
+/obj/item/gun/energy/cell_loaded/medigun/mourning/add_deep_lore() //overrides original medigun deepdesc
+	return
+
+/obj/item/stock_parts/power_store/cell/medigun/weeping
+	name = "weeping medigun cell"
+	maxcharge = STANDARD_CELL_CHARGE * 2
+	chargerate = STANDARD_CELL_CHARGE * 0.2
 
 /mob/living/simple_animal/hostile/mourning_butterfly
 	name = "mourning butterfly"
@@ -178,7 +203,10 @@
 	obj_damage = 20
 	attack_sound = 'sound/items/weapons/bladeslice.ogg'
 	attack_vis_effect = ATTACK_EFFECT_SLASH
-	mob_size = MOB_SIZE_SMALL
+	density = FALSE
+	pass_flags = PASSTABLE | PASSGRILLE | PASSMOB
+	mob_size = MOB_SIZE_TINY
+	mob_biotypes = MOB_ORGANIC | MOB_BUG
 	attack_verb_continuous = "flies at"
 	attack_verb_simple = "fly at"
 	wound_bonus = 25
