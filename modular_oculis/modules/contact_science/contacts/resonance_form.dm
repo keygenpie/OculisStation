@@ -30,10 +30,11 @@
 	var/hearing_range = 9
 	var/anchored_turf
 	var/breaching = FALSE
+	var/datum/language/spoken_lang = /datum/language/common
 
 /mob/living/simple_animal/formic/Initialize(mapload)
 	. = ..()
-	say(initial_line)
+	say(initial_line, language = spoken_lang)
 	add_traits(list(TRAIT_GODMODE, TRAIT_IMMOBILIZED, TRAIT_AGENDER, TRAIT_NO_STAGGER), src)
 	anchored_turf = get_turf(src)
 
@@ -75,7 +76,7 @@
 /mob/living/simple_animal/formic/proc/echo_success() //put interactions here
 	var/successful_echo = awaiting_response
 	if(successful_echo == "who are you")
-		say("Insert response here.")
+		say("Insert response here.", language = spoken_lang)
 		last_response = "who are you"
 	return
 
