@@ -85,8 +85,7 @@
 	if(!breaching)
 		dissipation_timer_current -= 1
 		if(dissipation_timer_current <= 0) //the timer is up. grant the boon
-			for(var/datum/weather/stopping in active_weathers)
-				clear_weather(stopping)
+			stop_everything()
 			say("Finally, the rain passes. My boon is yours. May we pass again.")
 			addtimer(CALLBACK(src, PROC_REF(reward)), 30, TIMER_UNIQUE | TIMER_DELETE_ME)
 
@@ -148,8 +147,7 @@
 /mob/living/simple_animal/formic/mourning_umbrella/proc/breach()
 	var/butterflies_spawned = 0
 	priority_announce("An anomalous resonance form has breached containment within [station_name()]. Please route to subdue the hostile form.")
-	for(var/datum/weather/stopping in active_weathers)
-		clear_weather(stopping)
+	stop_everything()
 	for(var/turf/butterfly_turf in weather_area)
 		if(prob(butterfly_rate))
 			new /mob/living/simple_animal/hostile/mourning_butterfly(butterfly_turf)
@@ -164,6 +162,10 @@
 	new /obj/item/gun/energy/cell_loaded/medigun/mourning(get_turf(src))
 	visible_message(span_warning("The umbrella dissipates just as the rain did, leaving behind a strange weapon."))
 	qdel(src)
+
+/mob/living/simple_animal/formic/mourning_umbrella/stop_everything()
+	for(var/datum/weather/stopping in active_weathers)
+		clear_weather(stopping)
 
 /obj/item/gun/energy/cell_loaded/medigun/mourning
 	name = "umbrella's boon"
