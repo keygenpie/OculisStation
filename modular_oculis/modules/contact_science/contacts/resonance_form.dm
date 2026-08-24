@@ -92,3 +92,6 @@
 		balloon_alert(target, "speech linked!")
 	else
 		balloon_alert(target, "speech already linked!")
+
+/mob/living/simple_animal/formic/proc/stop_everything() //function for stopping effects when cutting the connection
+	return
