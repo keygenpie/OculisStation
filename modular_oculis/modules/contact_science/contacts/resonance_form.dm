@@ -57,7 +57,7 @@
 	if(interaction_cooldown_current > 0) //don't speak if there was recent interaction to prevent awkward dialogue spam
 		return
 	var/performed_dialogue = pick(dialogue_lines)
-	say(performed_dialogue)
+	say(performed_dialogue, language = spoken_lang)
 
 /mob/living/simple_animal/formic/proc/respond_to_command(mob/living/carbon/human/source, list/hearing_args)
 	SIGNAL_HANDLER
