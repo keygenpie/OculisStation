@@ -111,6 +111,7 @@
 		if(do_after(user, operation_time SECONDS, src))
 			use_power = IDLE_POWER_USE
 			active_contact = FALSE
+			contacted_form.stop_everything()
 			qdel(contacted_form)
 			update_icon_state()
 			return ITEM_INTERACT_SUCCESS
