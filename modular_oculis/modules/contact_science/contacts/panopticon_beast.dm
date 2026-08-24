@@ -210,7 +210,7 @@
 	stamina = 10
 	immobilize = 1 SECONDS
 	jitter = 1 SECONDS
-	damage_type = OXY
+	damage_type = BURN
 	reflectable = FALSE
 	armor_flag = ENERGY
 
