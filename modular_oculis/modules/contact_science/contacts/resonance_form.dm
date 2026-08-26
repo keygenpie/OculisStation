@@ -57,7 +57,7 @@
 	if(interaction_cooldown_current > 0) //don't speak if there was recent interaction to prevent awkward dialogue spam
 		return
 	var/performed_dialogue = pick(dialogue_lines)
-	langsay(performed_dialogue, language = spoken_lang)
+	langsay(performed_dialogue)
 
 /mob/living/simple_animal/formic/proc/langsay(var/spoken) //easy way to make a mob speak in their lang variable. will be used for a translator in future(?)
 	say(spoken, language = spoken_lang)
@@ -79,7 +79,7 @@
 /mob/living/simple_animal/formic/proc/echo_success() //put interactions here
 	var/successful_echo = awaiting_response
 	if(successful_echo == "who are you")
-		langsay("Insert response here.", language = spoken_lang)
+		langsay("Insert response here.")
 		last_response = "who are you"
 	return
 
