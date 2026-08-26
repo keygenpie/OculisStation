@@ -81,12 +81,12 @@
 		breaching = TRUE
 		sound_to_playing_players('sound/effects/magic/lightning_chargeup.ogg')
 		addtimer(CALLBACK(src, PROC_REF(breach)), 80, TIMER_UNIQUE | TIMER_DELETE_ME)
-		say("The rain has seen death. I cannot stop it any longer. Goodbye.")
+		langsay("The rain has seen death. I cannot stop it any longer. Goodbye.")
 	if(!breaching)
 		dissipation_timer_current -= 1
 		if(dissipation_timer_current <= 0) //the timer is up. grant the boon
 			stop_everything()
-			say("Finally, the rain passes. My boon is yours. May we pass again.")
+			langsay("Finally, the rain passes. My boon is yours. May we pass again.")
 			addtimer(CALLBACK(src, PROC_REF(reward)), 30, TIMER_UNIQUE | TIMER_DELETE_ME)
 
 /mob/living/simple_animal/formic/mourning_umbrella/echo_success()
@@ -96,34 +96,34 @@
 	if(successful_echo == "feed from my hand") //feed from the hands of the speaker. accepts biometric data from health scanners
 		last_response = "feed from my hand"
 		if(get_dist(src, last_speaker) > 1) //must be adjacent
-			say("Come closer, so that I may absorb.")
+			langsay("Come closer, so that I may absorb.")
 		else
 			feed_biometric(last_speaker)
 	if(successful_echo == "how long is the rain") //check the timer
 		last_response = "how long is the rain"
 		if(dissipation_timer_current < dissipation_timer * 0.25) //less than 25%
-			say("Not much longer, now.")
+			langsay("Not much longer, now.")
 		else if(dissipation_timer_current < dissipation_timer * 0.5) //less than 50%
-			say("It will be some time longer.")
+			langsay("It will be some time longer.")
 		else if(dissipation_timer_current < dissipation_timer * 0.75) //less than 75%
-			say("The rain has passed somewhat, though there is plenty more.")
+			langsay("The rain has passed somewhat, though there is plenty more.")
 		else
-			say("The rain has hardly passed yet.")
+			langsay("The rain has hardly passed yet.")
 	if(successful_echo == "what are you") //simple dialogue
 		last_response = "what are you"
-		say("An arbiter of the rain. It shall pass, so long as it does not sense death.")
+		langsay("An arbiter of the rain. It shall pass, so long as it does not sense death.")
 		echoes -= "what are you"
 		echoes += "what is the rain"
 		balloon_alert(last_speaker, "new echoes detected!")
 	if(successful_echo == "where is your hunger") //simple dialogue, only after it doesnt want to feed anymore
 		last_response = "where is your hunger"
-		say("There is only so much data I can feed the rain. Now, we must only allow its surveillance and bide our time.")
+		langsay("There is only so much data I can feed the rain. Now, we must only allow its surveillance and bide our time.")
 	if(successful_echo == "what is the rain") //simple dialogue, only after asking what it is
 		if(last_response == "where is your hunger") //if fully fed before doing this dialogue and after performing the other dialogue, text changes. for fun really
 			last_response = "what is the rain"
-			say("It is what I feed the scans you provide me. It praises life, and your scans have certainly pleased it. But, only so much can be done.")
+			langsay("It is what I feed the scans you provide me. It praises life, and your scans have certainly pleased it. But, only so much can be done.")
 		last_response = "what is the rain"
-		say("It watches your biometrics. It despises death, and praises life. When it rains, it pours.")
+		langsay("It watches your biometrics. It despises death, and praises life. When it rains, it pours.")
 
 /mob/living/simple_animal/formic/mourning_umbrella/proc/feed_biometric(mob/living/carbon/human/feeder)
 	var is_success = FALSE
@@ -139,10 +139,10 @@
 			to_chat(feeder, span_warning("The paper disappears as its essence is absorbed by the creature."))
 			qdel(feeding_item)
 	if(is_success)
-		say("Thank you. This should help the rain pass.")
+		langsay("Thank you. This should help the rain pass.")
 		playsound(feeder, 'sound/effects/portal/portal_travel.ogg', 25)
 	else
-		say("This will not do. Present biometric data.")
+		langsay("This will not do. Present biometric data.")
 
 /mob/living/simple_animal/formic/mourning_umbrella/proc/breach()
 	var/butterflies_spawned = 0

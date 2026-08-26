@@ -33,17 +33,17 @@
 	if(successful_echo == "i present myself") //install a random unique implant into yourself, take damage to the implanted limb
 		last_response = "i present myself"
 		if(get_dist(src, last_speaker) > 1) //must be adjacent
-			say("Come closer, closer.")
+			langsay("Come closer, closer.")
 		else
 			give_augment(0)
 	if(successful_echo == "i present my blade") //give a random upgrade to one of your weapons, take damage to a random limb
 		last_response = "i present my blade"
 		if(get_dist(src, last_speaker) > 1)
-			say("Bring it closer, closer.")
+			langsay("Bring it closer, closer.")
 		else
 			give_upgrades()
 	if(successful_echo == "why are you here") //simple dialogue, meant to hint at the containment breach
-		say("Something great is coming. You must be ready to embrace it, embrace it.")
+		langsay("Something great is coming. You must be ready to embrace it, embrace it.")
 
 /mob/living/simple_animal/formic/forgotten_forge/proc/give_upgrades() //for both hands, find weapons and give them random upgrades
 	var is_success = FALSE
@@ -96,21 +96,21 @@
 		to_chat(last_speaker, span_warning("An ache creeps around your body, like a serpent searching for a point to sink its teeth into."))
 		playsound(last_speaker, 'sound/effects/magic/staff_healing.ogg', 50)
 		if(firstaugment) //different lines if first upgrade, also first upgrade unlocks echoes
-			say("Feel the brass in your hands, hands.")
+			langsay("Feel the brass in your hands, hands.")
 			firstaugment = FALSE
 			echoes += "why are you here"
 			balloon_alert(last_speaker, "new echoes detected!")
 		else
-			say("Feel the brass in your hands, loyal one, loyal one.")
+			langsay("Feel the brass in your hands, loyal one, loyal one.")
 	else
 		if(firstaugment)
-			say("I cannot forge this, nascent one, nascent one.")
+			langsay("I cannot forge this, nascent one, nascent one.")
 		else
-			say("I cannot forge this, forge this.")
+			langsay("I cannot forge this, forge this.")
 
 /mob/living/simple_animal/formic/forgotten_forge/proc/give_augment(var/num_loops)
 	if(num_loops >= 10) //at ten loops, activate failsafe
-		say("Your body is already prepared, prepared.")
+		langsay("Your body is already prepared, prepared.")
 		return
 	var/list/potential_implants = list(
 		/obj/item/organ/cyberimp/arm/toolkit/clockwork_spear/left_arm,
@@ -127,7 +127,7 @@
 		return
 	else
 		loyalty += 1
-		say("You are changed for the greater, greater.")
+		langsay("You are changed for the greater, greater.")
 		playsound(last_speaker, 'sound/effects/magic/staff_healing.ogg', 50)
 		last_speaker.apply_damage(loyalty * 5, BRUTE, chosen_implant.zone, wound_bonus=CANT_WOUND)
 		to_chat(last_speaker, span_warning("An ache festers within your body as a " + chosen_implant.name + " is inserted into you."))
@@ -137,7 +137,7 @@
 
 	if(loyalty >= loyalty_threshold && !breaching) //if meeting the threshold, breach
 		breaching = TRUE
-		say("Finally, you are ready for your trial. Allow your brass to carry you to victory, victory.")
+		langsay("Finally, you are ready for your trial. Allow your brass to carry you to victory, victory.")
 		sound_to_playing_players('sound/effects/magic/lightning_chargeup.ogg')
 		addtimer(CALLBACK(src, PROC_REF(breach)), 80, TIMER_UNIQUE | TIMER_DELETE_ME)
 

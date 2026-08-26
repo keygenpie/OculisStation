@@ -81,7 +81,7 @@
 		return
 	if(successful_echo == "you are worth loving")
 		last_response = "you are worth loving"
-		say("Thank you.")
+		langsay("Thank you.")
 		new /obj/item/clothing/neck/cloak/black_cat_coat(get_turf(src))
 		visible_message(span_warning("The black cat disappears, leaving behind a cloak..."))
 		playsound(src, 'sound/effects/magic/staff_healing.ogg', 50)
@@ -91,7 +91,7 @@
 		if(successful_echo == sequence3[sequence3_answer])
 			last_response = sequence3_answer
 			balloon_alert(last_speaker, "new echoes detected!")
-			say("Then... then tell me. Tell me I am worth loving.")
+			langsay("Then... then tell me. Tell me I am worth loving.")
 			current_sequence = 4
 			echoes = list(
 				"you are worth loving"
@@ -99,7 +99,7 @@
 			return
 		else
 			last_response = successful_echo
-			say(pick(sequence3_failures))
+			langsay(pick(sequence3_failures))
 			curse(last_speaker)
 			last_speaker.adjust_organ_loss(ORGAN_SLOT_BRAIN, 15, 100)
 			return
@@ -107,13 +107,13 @@
 		if(successful_echo == sequence2[sequence2_answer])
 			last_response = sequence2_answer
 			balloon_alert(last_speaker, "new echoes detected!")
-			say("You're... no. Stop. Why... why are you doing this?")
+			langsay("You're... no. Stop. Why... why are you doing this?")
 			current_sequence = 3
 			echoes = sequence3
 			return
 		else
 			last_response = successful_echo
-			say(pick(sequence3_failures))
+			langsay(pick(sequence3_failures))
 			curse(last_speaker)
 			last_speaker.adjust_organ_loss(ORGAN_SLOT_BRAIN, 10, 100)
 			return
@@ -121,13 +121,13 @@
 		if(successful_echo == sequence1[sequence1_answer])
 			last_response = sequence1_answer
 			balloon_alert(last_speaker, "new echoes detected!")
-			say("I guess... but that's... no. What is there to really love about me?")
+			langsay("I guess... but that's... no. What is there to really love about me?")
 			current_sequence = 2
 			echoes = sequence2
 			return
 		else
 			last_response = successful_echo
-			say(pick(sequence1_failures))
+			langsay(pick(sequence1_failures))
 			curse(last_speaker)
 			last_speaker.adjust_organ_loss(ORGAN_SLOT_BRAIN, 5, 100)
 			return

@@ -34,7 +34,7 @@
 
 /mob/living/simple_animal/formic/Initialize(mapload)
 	. = ..()
-	say(initial_line, language = spoken_lang)
+	langsay(initial_line, language = spoken_lang)
 	add_traits(list(TRAIT_GODMODE, TRAIT_IMMOBILIZED, TRAIT_AGENDER, TRAIT_NO_STAGGER), src)
 	anchored_turf = get_turf(src)
 
@@ -57,7 +57,10 @@
 	if(interaction_cooldown_current > 0) //don't speak if there was recent interaction to prevent awkward dialogue spam
 		return
 	var/performed_dialogue = pick(dialogue_lines)
-	say(performed_dialogue, language = spoken_lang)
+	langsay(performed_dialogue, language = spoken_lang)
+
+/mob/living/simple_animal/formic/proc/langsay(var/spoken) //easy way to make a mob speak in their lang variable. will be used for a translator in future(?)
+	say(spoken, language = spoken_lang)
 
 /mob/living/simple_animal/formic/proc/respond_to_command(mob/living/carbon/human/source, list/hearing_args)
 	SIGNAL_HANDLER
@@ -76,7 +79,7 @@
 /mob/living/simple_animal/formic/proc/echo_success() //put interactions here
 	var/successful_echo = awaiting_response
 	if(successful_echo == "who are you")
-		say("Insert response here.", language = spoken_lang)
+		langsay("Insert response here.", language = spoken_lang)
 		last_response = "who are you"
 	return
 

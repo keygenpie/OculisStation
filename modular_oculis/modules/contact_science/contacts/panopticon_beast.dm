@@ -58,7 +58,7 @@
 	if(successful_echo == "feed from my hand") //feed from the hands of the speaker
 		last_response = "feed from my hand"
 		if(get_dist(src, last_speaker) > 1) //must be adjacent
-			say("Closer. Hand. Forward.")
+			langsay("Closer. Hand. Forward.")
 		else
 			feed_logistics(last_speaker)
 	if(successful_echo == "what is my reward") //get rewards
@@ -66,17 +66,17 @@
 		if(rewards > 0)
 			give_reward(last_speaker)
 		else
-			say("Feed. More. Then. Reward.")
+			langsay("Feed. More. Then. Reward.")
 	if(successful_echo == "are you hungry") //check the timer
 		last_response = "are you hungry"
 		if(feeding_timer_current < feeding_timer * 0.25) //less than 25%
-			say("Starving. Feed. Feed. Feed.")
+			langsay("Starving. Feed. Feed. Feed.")
 		else if(feeding_timer_current < feeding_timer * 0.5) //less than 50%
-			say("Hungry. Feed. Feed.")
+			langsay("Hungry. Feed. Feed.")
 		else if(feeding_timer_current < feeding_timer * 0.75) //less than 75%
-			say("Peckish. Feed. Data.")
+			langsay("Peckish. Feed. Data.")
 		else
-			say("Full. Yet. Hungry. Always. Feed.")
+			langsay("Full. Yet. Hungry. Always. Feed.")
 
 /mob/living/simple_animal/formic/panopticon_beast/proc/feed_logistics(mob/living/carbon/human/feeder)
 	var is_success = FALSE
@@ -90,12 +90,12 @@
 			to_chat(feeder, span_warning("The manifest disappears as its essence is absorbed by the creature."))
 			qdel(feeding_item)
 	if(is_success)
-		say("Feed. Gratitude. Grow.")
+		langsay("Feed. Gratitude. Grow.")
 		playsound(feeder, 'sound/effects/portal/portal_travel.ogg', 25)
 		feeding_timer -= 5 //reduce the max timer, little by little. it will get out eventually
 		feeding_timer_current += feeding_timer * 0.25
 	else
-		say("Cannot. Feed. Bring. Data.")
+		langsay("Cannot. Feed. Bring. Data.")
 
 /mob/living/simple_animal/formic/panopticon_beast/proc/give_reward(mob/living/carbon/human/rewardee)
 	to_chat(rewardee, span_warning("The creature regurgitates item(s) at you!"))
@@ -104,7 +104,7 @@
 		var/obj/item/reward_to_throw = new reward_to_give(get_turf(src))
 		reward_to_throw.throw_at(rewardee, 7, 3, thrower = src, gentle = TRUE)
 	rewards = 0
-	say("Reward.")
+	langsay("Reward.")
 
 /obj/item/clothing/glasses/night/panopticon //unique reward, special NVGs which grant invisibility sight
 	name = "panopticon goggles"

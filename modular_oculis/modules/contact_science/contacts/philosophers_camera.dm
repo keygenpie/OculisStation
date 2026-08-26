@@ -57,12 +57,12 @@
 		if(memoriam)
 			if(!memoriam.Find(last_speaker))
 				memoriam += last_speaker
-				say("Click! I'll remember you forever!")
+				langsay("Click! I'll remember you forever!")
 			else
-				say("Click! Another for the books!")
+				langsay("Click! Another for the books!")
 		else //if list isnt initialized yet, make it
 			memoriam = list(last_speaker)
-			say("Click! Glad to make your acquaintance!")
+			langsay("Click! Glad to make your acquaintance!")
 	if(successful_echo == "forget me") //be forgotten from the list, taking brain damage but reducing decay level.
 		last_response = "forget me"
 		if(memoriam.Find(last_speaker))
@@ -71,9 +71,9 @@
 				last_speaker.adjust_organ_loss(ORGAN_SLOT_BRAIN, decay_level * 4, 20)
 				decay_level *= 0.5
 				to_chat(last_speaker, span_warning("You feel the camera's entropy slow down... your head pounds."))
-				say("Don't worry! I've... already forgotten.")
+				langsay("Don't worry! I've... already forgotten.")
 		else //still causes brain damage if not found
-			say("But... I don't know who you are. What do you mean, friend?")
+			langsay("But... I don't know who you are. What do you mean, friend?")
 			last_speaker.adjust_organ_loss(ORGAN_SLOT_BRAIN, decay_level * 2, 20)
 	if(successful_echo == "do you remember me") //let the decay level increase, curing some brain damage. causes them to forget afterwards to prevent spam
 		last_response = "do you remember me"
@@ -82,9 +82,9 @@
 			last_speaker.adjust_organ_loss(ORGAN_SLOT_BRAIN, decay_level * -2, 20)
 			to_chat(last_speaker, span_warning("You feel the camera's entropy accelerate... yet your head feels clearer."))
 			decay_level += 2
-			say("I remember you! But... I'm already forgetting.")
+			langsay("I remember you! But... I'm already forgetting.")
 		else
-			say("I can't seem to! Perhaps we should take a picture?")
+			langsay("I can't seem to! Perhaps we should take a picture?")
 	return
 
 /mob/living/simple_animal/formic/philosophers_camera/proc/transmute(list/turfs)
