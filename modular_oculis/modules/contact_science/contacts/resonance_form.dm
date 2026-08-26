@@ -34,7 +34,7 @@
 
 /mob/living/simple_animal/formic/Initialize(mapload)
 	. = ..()
-	langsay(initial_line, language = spoken_lang)
+	langsay(initial_line)
 	add_traits(list(TRAIT_GODMODE, TRAIT_IMMOBILIZED, TRAIT_AGENDER, TRAIT_NO_STAGGER), src)
 	anchored_turf = get_turf(src)
 
