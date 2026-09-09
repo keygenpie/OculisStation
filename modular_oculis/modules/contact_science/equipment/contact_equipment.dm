@@ -168,14 +168,11 @@
 	circuit = /obj/item/circuitboard/machine/contactplatform
 	var/obj/machinery/contactscanner/linkedscanner
 	var/failure_chance = 10
-	var/list/mobslist = list(
-		/mob/living/simple_animal/formic/philosophers_camera,
-		/mob/living/simple_animal/formic/forgotten_forge,
-		/mob/living/simple_animal/formic/black_cat,
-		/mob/living/simple_animal/formic/panopticon_beast,
-		/mob/living/simple_animal/formic/mourning_umbrella,
-		/mob/living/simple_animal/formic/olivers_scarecrow
-	)
+	var/list/mobslist
+
+/obj/machinery/contactplatform/Initialize(mapload)
+	. = ..()
+	mobslist = typesof(/mob/living/simple_animal/formic)
 
 /obj/machinery/contactplatform/crowbar_act(mob/user, obj/item/tool)
 	return default_deconstruction_crowbar(user, tool)
