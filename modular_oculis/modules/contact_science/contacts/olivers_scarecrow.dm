@@ -180,7 +180,7 @@
 	do_sparks(3, FALSE, get_turf(user))
 
 /obj/item/mod/module/dispenser/mirage/dreamcoil //special chaotic grenade dispenser. must be unlocked via code secret
-	name = "\improper MOD dreamcoil dispenser module"
+	name = "\improper malfunctioning MOD dreamcoil module"
 	desc = "Redundant complexities prevent this module from being inserted until a code is entered. Dispenses 'dreamcoil' grenades. Dreams are chaotic - or was it a nightmare he had?"
 	icon = 'modular_oculis/modules/contact_science/icons/olivers_scarecrow.dmi'
 	icon_state = "dreamcoil"
