@@ -31,6 +31,7 @@ E.g:
 
 - modular_oculis\modules\contact_science\equipment\contact_research.dm, #define TECHWEB_NODE_CONTACT_SCIENCE "contact_science"
 - code\DEFINES\traits\declarations.dm, #define TRAIT_CURSED_SUPPRESS "curse suppression"
+- code\DEFINES\research\slimes.dm, #define SLIME_TYPE_PARASITE "parasite"
 <!-- If you needed to add any defines, mention the files you added those defines in, along with the name of the defines. -->
 
 ### Included files that are not contained in this module:

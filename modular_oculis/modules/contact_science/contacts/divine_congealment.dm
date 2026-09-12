@@ -8,15 +8,16 @@
 
 	nanotrasen_id = "NT-ARDB-007"
 	primary_hazard_labels = "Virohazard"
-	secondary_hazard_labels = "Hostile manifestation"
+	secondary_hazard_labels = "N/A"
 	initial_line = "BRING ME MY CHILDREN. I WILL MAKE THEM ANEW."
-	hidden_description = "A mass of xenobiological slime matter animated by a crystalline core at its center. Slimeperson translators have concluded that it seeks some variety of rebirthing for its children, using materials as essence."
+	hidden_description = "A mass of xenobiological slime matter animated by a crystalline core at its center. Slimeperson translators conclude that it seeks some variety of rebirthing for its 'children', using materials as essence. Scans show an otherwise unknown variety of slimic matter within."
 	dialogue_lines = list(
 		"BE REBORN, MY CHILDREN. CHANGE IS LIFE.",
 		"YOU, INDIVIDUAL. BE PART OF SOMETHING GREATER.",
 		"YOU HAVE ONLY SCRATCHED THE SURFACE.",
 		"THE STORM. DO YOU HEAR IT AS I DO?",
-		"SURROUND ME, BASK IN MY GLORY."
+		"SURROUND ME, BASK IN MY GLORY.",
+		"PARASITES. ALL OF YOU."
 	)
 	echoes = list(
 		"teach me"
@@ -60,14 +61,15 @@
 		//radium
 		/datum/slime_type/lightpink = 0,
 		/datum/slime_type/pink = 1,
-		/datum/slime_type/rainbow = 0
+		/datum/slime_type/rainbow = 0,
+		/datum/slime_type/parasite = 0
 	)
 
 /mob/living/simple_animal/formic/divine_congealment/echo_success()
 	var/successful_echo = awaiting_response
 	if(successful_echo == "teach me") //starting dialogue. meant to establish this form's metaknowledge of contact science, if you speak its language
 		last_response = "teach me"
-		say("YOUR LITTLE DEVICE. LOOK ONCE MORE.") //intentionally not in the form's usual language
+		langsay("YOUR LITTLE DEVICE. LOOK ONCE MORE.")
 		echoes -= "teach me"
 		echoes += "assimilate slimes"
 		echoes += "assimilate matter"
@@ -83,6 +85,7 @@
 				success = TRUE
 		if(success)
 			langsay("COME, CHILDREN. NOW IS YOUR TIME.")
+			playsound(src, SFX_SEAR, 30, TRUE)
 		else
 			langsay("WHERE? WHERE ARE MY CHILDREN?")
 	if(successful_echo == "assimilate matter") //convert materials to essences
@@ -116,6 +119,7 @@
 					success = TRUE
 		if(success)
 			langsay("MATERIAL... ONLY A MATTER OF ESSENCE.")
+			playsound(src, SFX_SEAR, 30, TRUE)
 		else
 			langsay("SUCH A REQUEST MUST BE MET WITH MATERIAL.")
 	if(successful_echo == "commence rebirth") //consume materials, converting held slimes into new ones
@@ -159,15 +163,15 @@
 		temp_type_pool[/datum/slime_type/lightpink] += 1
 		temp_type_pool[/datum/slime_type/pink] += 1
 		temp_type_pool[/datum/slime_type/rainbow] += 1
+		temp_type_pool[/datum/slime_type/parasite] += 1
 	absorbed_clarium *= 0.5 //don't completely remove essence, just cut down the amount
 	absorbed_ferrum *= 0.5
 	absorbed_aurum *= 0.5
 	absorbed_crystallum *= 0.5
 	absorbed_radium *= 0.5
 	for(var/i in 1 to slimes_to_birth) //rebirth
-		var/mob/living/basic/slime/birthing = new /mob/living/basic/slime(pick(RANGE_TURFS(1, get_turf(src))))
 		last_picked = pick_weight(temp_type_pool)
-		birthing.set_slime_type(last_picked)
+		new /mob/living/basic/slime(pick(RANGE_TURFS(1, get_turf(src))), last_picked)
 		if(viral_risk < 100)
 			viral_risk += 1
 	absorbed_slimes -= slimes_to_birth
@@ -198,5 +202,191 @@
 	. = ..()
 	if(stage > 1 && prob(1 * stage)) //cough it up
 		affected_mob.vomit(vomit_flags = MOB_VOMIT_BLOOD, vomit_type = /obj/effect/decal/cleanable/vomit, lost_nutrition = stage * 5, distance = 0)
-		new /mob/living/basic/slime/random(get_turf(affected_mob))
+		new /mob/living/basic/slime(get_turf(affected_mob), /datum/slime_type/parasite)
 		affected_mob.visible_message(span_warning(affected_mob.name + " throws up a slime!"))
+
+/datum/reagent/divparasite_toxin
+	name = "Divine Festering"
+	description = "A toxin full of festering parasites."
+	color = COLOR_PALE_GREEN //same rgb code as the slime
+	taste_description = "divinity"
+	penetrates_skin = NONE
+	chemical_flags = REAGENT_CAN_BE_SYNTHESIZED
+	randomized_spawns = REAGENT_SPAWN_ALL_RANDOM_SPAWNS
+
+/datum/reagent/divparasite_toxin/expose_mob(mob/living/exposed_mob, methods=TOUCH, reac_volume, show_message=TRUE, touch_protection=0)
+	. = ..()
+	if((methods & (PATCH|INGEST|INJECT|INHALE)) || ((methods & (VAPOR|TOUCH)) && prob(min(reac_volume,100)*(1 - touch_protection))))
+		exposed_mob.ForceContractDisease(new /datum/disease/divine_parasite(), FALSE, TRUE)
+
+/datum/slime_type/parasite
+	colour = SLIME_TYPE_PARASITE
+	transparent = TRUE
+	core_type = /obj/item/slime_extract/parasite
+	mutations = list(
+		/datum/slime_type/parasite = 1,
+	)
+	rgb_code = COLOR_PALE_GREEN
+
+/obj/item/slime_extract/parasite
+	name = "parasite slime extract"
+	icon_state = "light-green-core"
+
+/obj/item/slime_extract/parasite/activate(mob/living/carbon/human/user, datum/species/jelly/luminescent/species, activation_type)
+	switch(activation_type)
+		if(SLIME_ACTIVATE_MINOR)
+			to_chat(user, span_notice("You activate [src]. You feel immunoresistant!"))
+			user.reagents.add_reagent(/datum/reagent/medicine/spaceacillin, 10)
+		if(SLIME_ACTIVATE_MAJOR)
+			user.ForceContractDisease(new /datum/disease/divine_parasite(), TRUE, TRUE)
+			to_chat(user, span_warning("You activate [src], and... something doesn't feel right."))
+
+/obj/item/slimecross/reproductive/parasite
+	extract_type = /obj/item/slime_extract/parasite
+	colour = SLIME_TYPE_PARASITE
+
+/obj/item/slimecross/regenerative/parasite
+	colour = SLIME_TYPE_PARASITE
+	effect_desc = "Fully heals the target and imbues them with spaceacillin."
+
+/obj/item/slimecross/regenerative/parasite/core_effect(mob/living/target, mob/user)
+	target.reagents.add_reagent(/datum/reagent/medicine/spaceacillin,10)
+
+/obj/item/slimecross/burning/parasite
+	colour = SLIME_TYPE_PARASITE
+	effect_desc = "Creates a small cloud of divine parasites when activated."
+
+/obj/item/slimecross/burning/parasite/do_effect(mob/user)
+	user.visible_message(span_danger("[src] boils over with a festering gas!"))
+	do_chem_smoke(3, user, get_turf(user), /datum/reagent/divparasite_toxin, 100, log = TRUE)
+	playsound(user, SFX_SEAR, 30, TRUE)
+	..()
+
+/obj/item/slimecross/stabilized/parasite
+	colour = SLIME_TYPE_PARASITE
+	effect_desc = "Owner gains a significant boost to toxin resistance."
+
+/datum/status_effect/stabilized/parasite
+	id = "stabilizedparasite"
+	colour = SLIME_TYPE_PARASITE
+
+/datum/status_effect/stabilized/parasite/on_apply()
+	if(ishuman(owner))
+		var/mob/living/carbon/human/H = owner
+		H.physiology.tox_mod -= 0.2
+	return ..()
+
+/datum/status_effect/stabilized/parasite/on_remove()
+	if(ishuman(owner))
+		var/mob/living/carbon/human/H = owner
+		H.physiology.tox_mod += 0.2
+
+/obj/item/slimecross/charged/parasite
+	colour = SLIME_TYPE_PARASITE
+	effect_desc = "Produces a grotesque toxic axe."
+
+/obj/item/slimecross/charged/parasite/do_effect(mob/user)
+	new /obj/item/fireaxe/boneaxe/plague(get_turf(user))
+	user.visible_message(span_notice("[src] sparks, and an axe slowly emerges from it!"))
+	..()
+
+/obj/item/fireaxe/boneaxe/plague
+	name = "plague axe"
+	desc = "A large axe made of grotesque green bone and sinew. Landing a throw may impart a divine parasite."
+	icon = 'modular_oculis/modules/contact_science/icons/divine_congealment.dmi'
+	icon_state = "plague_axe0"
+	base_icon_state = "plague_axe"
+	damtype = TOX
+	force_unwielded = 4
+	force_wielded = 15
+
+/obj/item/fireaxe/boneaxe/plague/on_thrown(mob/living/carbon/user, atom/target)
+	. = ..()
+	if(isliving(target))
+		var/mob/living/L = target
+		L.reagents?.add_reagent(/datum/reagent/divparasite_toxin,50)
+		playsound(target, SFX_SEAR, 30, TRUE)
+
+/obj/item/slimecross/selfsustaining/parasite
+	extract_type = /obj/item/slime_extract/parasite
+	colour = SLIME_TYPE_PARASITE
+
+/obj/item/slimecross/chilling/parasite
+	colour = SLIME_TYPE_PARASITE
+	effect_desc = "Injects everyone in the area with some spaceacillin."
+
+/obj/item/slimecross/chilling/parasite/do_effect(mob/user)
+	var/area/user_area = get_area(user)
+	if(user_area.outdoors)
+		to_chat(user, span_warning("[src] can't affect such a large area."))
+		return
+	user.visible_message(span_notice("[src] shatters, and an immunizing aura fills the room briefly."))
+	for (var/list/zlevel_turfs as anything in user_area.get_zlevel_turf_lists())
+		for(var/turf/area_turf as anything in zlevel_turfs)
+			for(var/mob/living/carbon/nearby in area_turf)
+				nearby.reagents?.add_reagent(/datum/reagent/medicine/spaceacillin,10)
+	..()
+
+/obj/item/slimecross/consuming/parasite
+	colour = SLIME_TYPE_PARASITE
+	effect_desc = "Creates an inconspicuous cookie which secretly poisons its consumer with a divine parasite."
+	cookietype = /obj/item/slime_cookie/parasite
+
+/obj/item/slime_cookie/parasite
+	name = "slime cookie"
+	desc = "A grey-ish transparent cookie. Nutritious, probably."
+	icon_state = "grey"
+	taste = "goo"
+	nutrition = 2
+
+/obj/item/slime_cookie/parasite/do_effect(mob/living/M, mob/user)
+	M.reagents?.add_reagent(/datum/reagent/divparasite_toxin,50)
+
+/obj/item/slimecross/recurring/parasite
+	extract_type = /obj/item/slime_extract/parasite
+	colour = SLIME_TYPE_PARASITE
+
+/obj/item/slimecross/prismatic/parasite
+	paintcolor = COLOR_PALE_GREEN //same rgb code as the slime
+	colour = SLIME_TYPE_PARASITE
+
+/obj/item/slimecross/warping/parasite
+	colour = SLIME_TYPE_PARASITE
+	runepath = /obj/effect/warped_rune/paraspace
+	effect_desc = "Draw a rune which may impart a divine parasite when stepped on."
+
+/obj/effect/warped_rune/paraspace
+	icon = 'modular_oculis/modules/contact_science/icons/divine_congealment.dmi'
+	icon_state = "rune_parasite"
+	desc = "Festering..."
+	remove_on_activation = FALSE
+
+/obj/effect/warped_rune/paraspace/on_entered(datum/source, atom/movable/AM, oldloc)
+	if(isliving(AM))
+		var/mob/living/L = AM
+		L.reagents?.add_reagent(/datum/reagent/divparasite_toxin,50)
+		activated_on_step = TRUE
+	return ..()
+
+/obj/item/slimecross/crystalline/parasite
+	crystal_type = /obj/structure/slime_crystal/parasite
+	colour = SLIME_TYPE_PARASITE
+
+/obj/structure/slime_crystal/parasite
+	colour = SLIME_TYPE_PARASITE
+
+/obj/structure/slime_crystal/parasite/Initialize(mapload) //overrides name and color from the slime crystal to avoid altering that code
+	. = ..()
+	name =  "para-slimic pylon"
+	add_atom_colour(COLOR_PALE_GREEN, FIXED_COLOUR_PRIORITY)
+
+/obj/structure/slime_crystal/parasite/on_mob_effect(mob/living/affected_mob) //dripfeeds spaceacillin
+	if(!istype(affected_mob, /mob/living/carbon))
+		return
+
+	new /obj/effect/temp_visual/heal(get_turf(affected_mob), COLOR_PALE_GREEN)
+	affected_mob.reagents?.add_reagent(/datum/reagent/medicine/spaceacillin,1) //just a lil bit
+
+/obj/item/slimecross/gentle/parasite
+	extract_type = /obj/item/slime_extract/parasite
+	colour = SLIME_TYPE_PARASITE
